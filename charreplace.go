@@ -1,7 +1,7 @@
 /*
 *
 * File: charreplace.go
-* Author(s): Austin
+* Author(s): Austin Albrecht, Severin Fürbringer
 * License: GPLv3
 * Github: https://github.com/Hoi15A/charreplacer-go
 *
@@ -10,24 +10,24 @@
 package main
 
 import (
-  "bytes"
-  "bufio"
-  "fmt"
-  "io/ioutil"
-  "os"
-  "path/filepath"
+	"bytes"
+	"bufio"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
-  "time"
+	"time"
 )
 
-var count = 0
-var runpath = "./"
+var count = 0				// Count of files replaced
+var runpath = "./"	// Default path
 
 func main() {
   start := time.Now()
 
-
-	if(len(os.Args) <= 1) {
+	if len(os.Args) <= 1 {
+		// Warn before running in current working directory
 		var confirm string
 		dir, _ := os.Getwd()
 		fmt.Printf("Warning: This action will possibly corrupt files in the directory %s", dir)
@@ -38,6 +38,7 @@ func main() {
 			os.Exit(0)
 		}
 	} else {
+		// Arguments were passed
 		for i := 0; i < len(os.Args); i++ {
 			if os.Args[i] == "--path" {
 				if len(os.Args) > i + 1 {
