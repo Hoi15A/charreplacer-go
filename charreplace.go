@@ -21,39 +21,50 @@ import (
 )
 
 var count = 0				// Count of files replaced
-var runpath = "./"	// Default path
+var runPath = "./"	// Default path
+var argsDefined = 0
 
 func main() {
   start := time.Now()
 
-	if len(os.Args) <= 1 {
-		// Warn before running in current working directory
-		var confirm string
-		dir, _ := os.Getwd()
-		fmt.Printf("Warning: This action will possibly corrupt files in the directory %s", dir)
-		fmt.Printf("Continue [y,n] ")
-		fmt.Scanln(&confirm)
-		if(strings.ToLower(confirm) != "y") {
-			fmt.Printf("Aborting!")
-			os.Exit(0)
-		}
-	} else {
+	if len(os.Args) > 1 {
 		// Arguments were passed
 		for i := 0; i < len(os.Args); i++ {
 			cArg := os.Args[i]
+
+			// Define a custom path to run in
 			if cArg == "--path" || cArg == "-p" {
+				argsDefined++
+
 				if len(os.Args) > i + 1 {
-					runpath = os.Args[i + 1]
+					runPath = os.Args[i + 1]
 				} else {
 					fmt.Printf("Error: Please supply a run path.")
 					os.Exit(1)
 				}
 			}
+
+			// Further flags can be placed here
 		}
 	}
+
+	// Warn before running in current working directory
+	if argsDefined == 0 {
+		var confirm string
+		dir, _ := os.Getwd()
+		fmt.Printf("Warning: This action will possibly corrupt files in the directory %s\n", dir)
+		fmt.Printf("Continue? [y,n] ")
+		fmt.Scanln(&confirm)
+
+		if(strings.ToLower(confirm) != "y") {
+			fmt.Println("Aborting!")
+			os.Exit(0)
+		}
+	}
+
   fmt.Println("Starting replacement: ")
 
-	err := filepath.Walk(runpath, visit)
+	err := filepath.Walk(runPath, visit)
   fmt.Printf("filepath.Walk() returned %v\n", err)
 
   elapsed := time.Since(start)
