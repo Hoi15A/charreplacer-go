@@ -10,22 +10,48 @@
 package main
 
 import (
-  "bufio"
   "bytes"
+  "bufio"
   "fmt"
   "io/ioutil"
   "os"
   "path/filepath"
+	"strings"
   "time"
 )
 
 var count = 0
+var runpath = "./"
 
 func main() {
   start := time.Now()
 
+
+	if(len(os.Args) <= 1) {
+		var confirm string
+		dir, _ := os.Getwd()
+		fmt.Printf("Warning: This action will possibly corrupt files in the directory %s", dir)
+		fmt.Printf("Continue [y,n] ")
+		fmt.Scanln(&confirm)
+		if(strings.ToLower(confirm) != "y") {
+			fmt.Printf("Aborting!")
+			os.Exit(0)
+		}
+	} else {
+		for i := 0; i < len(os.Args); i++ {
+			if os.Args[i] == "--path" {
+				if len(os.Args) > i + 1 {
+					runpath = os.Args[i + 1]
+				} else {
+					fmt.Printf("Error: Please supply a run path.")
+					os.Exit(1)
+				}
+			}
+		}
+	}
   fmt.Println("Starting replacement: ")
-  err := filepath.Walk("./", visit)
+
+	err := filepath.Walk(runpath, visit)
   fmt.Printf("filepath.Walk() returned %v\n", err)
 
   elapsed := time.Since(start)
