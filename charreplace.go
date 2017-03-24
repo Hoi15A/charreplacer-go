@@ -40,7 +40,8 @@ func main() {
 	} else {
 		// Arguments were passed
 		for i := 0; i < len(os.Args); i++ {
-			if os.Args[i] == "--path" {
+			cArg := os.Args[i]
+			if cArg == "--path" || cArg == "-p" {
 				if len(os.Args) > i + 1 {
 					runpath = os.Args[i + 1]
 				} else {
