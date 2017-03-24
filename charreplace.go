@@ -20,6 +20,9 @@ import (
 	"time"
 )
 
+// Valid command line flags (POSIX and GNU long-flags)
+var flags = []string{"--path", "-p"}
+
 var count = 0				// Count of files replaced
 var runPath = "./"	// Default path
 var argsDefined = 0
@@ -31,6 +34,14 @@ func main() {
 		// Arguments were passed
 		for i := 0; i < len(os.Args); i++ {
 			cArg := os.Args[i]
+
+			// Check if flag is at all valid
+			if strings.HasPrefix(cArg, "-") {
+				if !checkFlags(flags, cArg) {
+					fmt.Println("Aborting!")
+					os.Exit(1)
+				}
+			}
 
 			// Define a custom path to run in
 			if cArg == "--path" || cArg == "-p" {
@@ -72,6 +83,19 @@ func main() {
   fmt.Println("Files checked: ", count)
   fmt.Println("Push [ENTER] to exit...")
   bufio.NewReader(os.Stdin).ReadBytes('\n')
+}
+
+// Check if passed argument is within the allowed array of valid flags
+func checkFlags(flags []string, flag string) bool {
+	for _, a := range flags {
+		if a == flag {
+			// flag is valid
+			return true
+		}
+	}
+
+	fmt.Printf("'%s' is not a valid flag. ", flag)
+	return false
 }
 
 func visit(path string, f os.FileInfo, err error) error {
